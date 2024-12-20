@@ -10,27 +10,24 @@ class PostRepository {
 
   Future<List<PostModel>> fetchPost() async {
     try {
-      final response = await http.get(Uri.parse(baseUrl));
+      final reposnse = await http.get(Uri.parse(baseUrl));
 
-      if (response.statusCode == 200) {
-        final body = jsonDecode(response.body) as List;
+      if (reposnse.statusCode == 200) {
+        final body = jsonDecode(reposnse.body) as List;
         return body.map((e) {
           return PostModel(
-            id: e['id'],
             postId: e['postId'],
             email: e['email'] as String,
             body: e['body'] as String,
           );
         }).toList();
-      } else {
-        throw Exception('Failed to load data');
       }
     } on SocketException {
-      throw Exception('Network Error: No Internet');
+      throw Exception('Error while Fetching Data');
     } on TimeoutException {
-      throw Exception('Request Timeout');
-    } catch (e) {
-      throw Exception('Error: ${e.toString()}');
+      throw Exception('Error while Fetching Data');
     }
+
+    throw Exception('Error while Fetching Data');
   }
 }

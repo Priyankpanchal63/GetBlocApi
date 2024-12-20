@@ -17,9 +17,8 @@ class MyApp extends StatelessWidget {
       create: (_) => PostBloc(),
       child: MaterialApp(
         title: 'Flutter Demo',
-        theme: ThemeData(
-        ),
-        home:PostScreen(),
+        theme: ThemeData(),
+        home: PostScreen(),
       ),
     );
   }
