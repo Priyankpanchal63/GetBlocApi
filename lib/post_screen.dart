@@ -13,12 +13,11 @@ class PostScreen extends StatefulWidget {
 }
 
 class _PostScreenState extends State<PostScreen> {
-  TextEditingController _searchController = TextEditingController();
-
   @override
   void initState() {
+    // TODO: implement initState
     super.initState();
-    context.read<PostBloc>().add(PostFetched()); // Load all posts initially
+    context.read<PostBloc>().add(PostFetched());
   }
 
   @override
@@ -28,79 +27,26 @@ class _PostScreenState extends State<PostScreen> {
         title: Text('Posts APIs'),
       ),
       body: Center(
-        child: BlocBuilder<PostBloc, PostState>(
-          builder: (context, state) {
-            switch (state.postStatus) {
-              case PostStatus.loading:
-                return Center(child: CircularProgressIndicator());
+        child: BlocBuilder<PostBloc, PostState>(builder: (context, state) {
+          switch (state.postStatus) {
+            case PostStatus.loading:
+              return CircularProgressIndicator();
 
-              case PostStatus.success:
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: TextFormField(
-                        controller: _searchController,
-                        decoration: InputDecoration(
-                          hintText: "Search with Email",
-                          border: OutlineInputBorder(),
-                          suffixIcon: _searchController.text.isNotEmpty
-                              ? IconButton(
-                            icon: Icon(Icons.clear),
-                            onPressed: () {
-                              _searchController.clear();
-                              context.read<PostBloc>().add(PostFetched());
-                            },
-                          )
-                              : null,
-                        ),
-                        onChanged: (filterKey) {
-                          if (filterKey.isEmpty) {
-                            context.read<PostBloc>().add(PostFetched());
-                          } else {
-                            context.read<PostBloc>().add(SearchItem(filterKey));
-                          }
-                        },
-                      ),
-                    ),
-                    Expanded(
-                      child: state.temPostList.isEmpty &&
-                          state.postList.isEmpty
-                          ? Center(child: Text('No posts available'))
-                          : ListView.builder(
-                        itemCount: (state.temPostList.isNotEmpty
-                            ? state.temPostList.length
-                            : state.postList.length) >
-                            0
-                            ? (state.temPostList.isNotEmpty
-                            ? state.temPostList.length
-                            : state.postList.length)
-                            : 0,
-                        itemBuilder: (context, index) {
-                          var item = state.temPostList.isNotEmpty
-                              ? state.temPostList[index]
-                              : state.postList[index];
-                          return Card(
-                            child: ListTile(
-                              title: Text(item.email ?? 'No Email'),
-                              subtitle: Text(item.body ?? 'No Body'),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                  ],
-                );
+            case PostStatus.success:
+              return ListView.builder(
+                  itemCount: state.postList.length,
+                  itemBuilder: (context, index) {
+                    final item = state.postList[index];
+                    return ListTile(
+                      title: Text(item.email.toString()),
+                      subtitle: Text(item.body.toString()),
+                    );
+                  });
 
-              case PostStatus.failure:
-                return Center(child: Text(state.message.isEmpty ? 'Unknown Error' : state.message));
-
-              default:
-                return Center(child: Text('Unknown state'));
-            }
-          },
-        ),
+            case PostStatus.faliure:
+              return Text(state.message.toString());
+          }
+        }),
       ),
     );
   }
